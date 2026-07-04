@@ -34,28 +34,36 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async (credentials) => {
-    const { data } = await api.post('/api/auth/login/', credentials)
-    const nextUser = data.user || data.profile || null
+    const response = await api.post('/api/auth/login/', credentials)
+    const payload = response?.data?.data || response?.data || {}
+    const nextUser = {
+      email: payload.email,
+      role: payload.role,
+      username: payload.email,
+    }
 
-    localStorage.setItem('access_token', data.access)
-    localStorage.setItem('refresh_token', data.refresh)
+    localStorage.setItem('access_token', payload.access)
+    localStorage.setItem('refresh_token', payload.refresh)
     localStorage.setItem('user', JSON.stringify(nextUser))
 
-    setAccessToken(data.access)
-    setRefreshToken(data.refresh)
+    setAccessToken(payload.access)
+    setRefreshToken(payload.refresh)
     setUser(nextUser)
+
+    return nextUser
   }
 
   const register = async (credentials) => {
-    const { data } = await api.post('/api/auth/register/', credentials)
-    const nextUser = data.user || data.profile || null
+    const response = await api.post('/api/auth/register/', credentials)
+    const payload = response?.data?.data || response?.data || {}
+    const nextUser = payload || null
 
-    localStorage.setItem('access_token', data.access)
-    localStorage.setItem('refresh_token', data.refresh)
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     localStorage.setItem('user', JSON.stringify(nextUser))
 
-    setAccessToken(data.access)
-    setRefreshToken(data.refresh)
+    setAccessToken(null)
+    setRefreshToken(null)
     setUser(nextUser)
   }
 

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ username: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const { login } = useContext(AuthContext)
   const navigate = useNavigate()
@@ -17,10 +17,11 @@ export default function LoginPage() {
     setError('')
 
     try {
-      await login(form)
-      navigate('/products')
+      const nextUser = await login(form)
+      navigate(nextUser?.role === 'ADMIN' ? '/admin' : '/dashboard')
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed')
+      const detail = err.response?.data?.detail || err.response?.data?.non_field_errors?.[0]
+      setError(detail || 'Login failed')
     }
   }
 
@@ -28,7 +29,7 @@ export default function LoginPage() {
     <div className="auth-card">
       <h1>Sign in</h1>
       <form onSubmit={handleSubmit}>
-        <input name="username" placeholder="Username" value={form.username} onChange={handleChange} required />
+        <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
         <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required />
         <button type="submit">Login</button>
       </form>

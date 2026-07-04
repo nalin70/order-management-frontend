@@ -10,7 +10,7 @@ export default function ProductListPage() {
     const loadProducts = async () => {
       try {
         const { data } = await api.get('/api/v1/products/')
-        setProducts(data)
+        setProducts(data.results ?? data)
       } catch (err) {
         setError('Unable to load products')
       } finally {
