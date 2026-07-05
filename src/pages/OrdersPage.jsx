@@ -9,9 +9,26 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const loadOrders = async () => {
+        try {
+            const { data } = await api.get('/api/v1/orders/')
+            console.log(data)
+            setOrders(data.results)
+        } catch (err) {
+            console.log(err.response)
+            setError('Unable to load orders')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    loadOrders()
+}, [])
+
+  useEffect(() => {
+    const loadOrders = async () => {
       try {
         const { data } = await api.get('/api/v1/orders/')
-        setOrders(data)
+        setOrders(data.result || [])
       } catch (err) {
         setError('Unable to load orders')
       } finally {
@@ -26,6 +43,7 @@ export default function OrdersPage() {
     return <p>Loading orders...</p>
   }
 
+  console.log('fetched orders',orders);
   return (
     <div>
       <h1>Orders</h1>
