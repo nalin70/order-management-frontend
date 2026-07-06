@@ -16,16 +16,12 @@ function AppShell() {
     <div className="app-shell">
       {isAuthenticated ? (
         <nav className="top-nav">
-          <NavLink className="brand-link" to={isAdmin ? '/admin' : '/dashboard'}>
-            OrderFlow
-          </NavLink>
           <div className="nav-links">
-            <NavLink className={navClassName} to={isAdmin ? '/admin' : '/dashboard'}>Dashboard</NavLink>
             {!isAdmin ? <NavLink className={navClassName} to="/products">Products</NavLink> : null}
             {!isAdmin ? <NavLink className={navClassName} to="/orders">My Orders</NavLink> : null}
             {!isAdmin ? <NavLink className={navClassName} to="/payments">Payments</NavLink> : null}
             {isAdmin ? <NavLink className={navClassName} to="/admin/orders">Orders</NavLink> : null}
-            {isAdmin ? <NavLink className={navClassName} to="/admin/products">Inventory</NavLink> : null}
+            {isAdmin ? <NavLink className={navClassName} to="/admin/products">Products</NavLink> : null}
             <NavLink className={navClassName} to="/profile">Profile</NavLink>
           </div>
           <button type="button" className="logout-button" onClick={logout}>

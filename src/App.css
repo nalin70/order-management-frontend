@@ -37,14 +37,6 @@
   backdrop-filter: blur(12px);
 }
 
-.brand-link {
-  flex: 0 0 auto;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 900;
-  text-decoration: none;
-}
-
 .nav-links {
   display: flex;
   align-items: center;
@@ -113,8 +105,7 @@
 
 .page-hero h1,
 .auth-card h1,
-.card h1,
-.dashboard-card h1 {
+.card h1 {
   margin: .15rem 0 .35rem;
   color: var(--text);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
@@ -123,8 +114,7 @@
 
 .page-hero p,
 .card p,
-.auth-card p,
-.dashboard-card p {
+.auth-card p {
   margin-top: 0;
 }
 
@@ -144,7 +134,6 @@
 .auth-card,
 .card,
 .table-card,
-.dashboard-card,
 .product-form-card {
   padding: clamp(1rem, 2.2vw, 1.4rem);
   border: 1px solid var(--border);
@@ -504,15 +493,6 @@ tr:last-child td {
   font-weight: 900;
 }
 
-.dashboard-card {
-  max-width: 840px;
-  margin: 0 auto;
-}
-
-.dashboard-card .stats-grid {
-  margin: 0;
-}
-
 .profile-form {
   margin-top: 1rem;
 }
@@ -571,10 +551,6 @@ tr:last-child td {
 @media (max-width: 560px) {
   .main-content {
     padding: .8rem;
-  }
-
-  .brand-link {
-    width: 100%;
   }
 
   .top-nav .logout-button {

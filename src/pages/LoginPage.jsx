@@ -2,6 +2,20 @@ import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 
+function getLoginErrorMessage(err) {
+  const data = err.response?.data
+  const errors = data?.errors || {}
+  const firstFieldError = Object.values(errors).flat().find(Boolean)
+
+  return errors.detail
+    || data?.detail
+    || data?.non_field_errors?.[0]
+    || firstFieldError
+    || data?.message
+    || err.message
+    || 'Login failed'
+}
+
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
@@ -18,10 +32,9 @@ export default function LoginPage() {
 
     try {
       const nextUser = await login(form)
-      navigate(nextUser?.role === 'ADMIN' ? '/admin' : '/dashboard')
+      navigate(String(nextUser?.role).toUpperCase() === 'ADMIN' ? '/admin/products' : '/products')
     } catch (err) {
-      const detail = err.response?.data?.detail || err.response?.data?.non_field_errors?.[0]
-      setError(detail || 'Login failed')
+      setError(getLoginErrorMessage(err))
     }
   }
 

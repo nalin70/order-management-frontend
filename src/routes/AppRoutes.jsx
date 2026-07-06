@@ -10,8 +10,6 @@ import OrderDetailPage from '../pages/OrderDetailPage'
 import PaymentsPage from '../pages/PaymentsPage'
 import AdminOrdersPage from '../pages/AdminOrdersPage'
 import AdminProductsPage from '../pages/AdminProductsPage'
-import CustomerDashboard from '../pages/dashboard/CustomerDashboard'
-import AdminDashboard from '../pages/dashboard/AdminDashboard'
 
 function PrivateRoute({ children, adminOnly = false }) {
   const { isAuthenticated, isAdmin, loading } = useContext(AuthContext)
@@ -49,7 +47,7 @@ export default function AppRoutes() {
         path="/dashboard"
         element={
           <PrivateRoute>
-            <CustomerDashboard />
+            <Navigate to="/products" replace />
           </PrivateRoute>
         }
       />
@@ -57,7 +55,7 @@ export default function AppRoutes() {
         path="/admin"
         element={
           <PrivateRoute adminOnly>
-            <AdminDashboard />
+            <Navigate to="/admin/products" replace />
           </PrivateRoute>
         }
       />
@@ -125,5 +123,5 @@ export default function AppRoutes() {
 
 function HomeRedirect() {
   const { isAdmin } = useContext(AuthContext)
-  return <Navigate to={isAdmin ? '/admin' : '/dashboard'} replace />
+  return <Navigate to={isAdmin ? '/admin/products' : '/products'} replace />
 }

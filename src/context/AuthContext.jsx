@@ -3,6 +3,49 @@ import api from '../api/axios'
 
 export const AuthContext = createContext(null)
 
+function unwrapPayload(data) {
+  return data?.data || data || {}
+}
+
+function normalizeRole(role) {
+  return String(role ?? '').trim().toUpperCase()
+}
+
+function getAccessToken(payload) {
+  return payload.access
+    || payload.access_token
+    || payload.tokens?.access
+    || payload.tokens?.access_token
+    || payload.token?.access
+    || payload.token?.access_token
+    || payload.auth?.access
+    || payload.auth?.access_token
+    || (typeof payload.token === 'string' ? payload.token : null)
+}
+
+function getRefreshToken(payload) {
+  return payload.refresh
+    || payload.refresh_token
+    || payload.tokens?.refresh
+    || payload.tokens?.refresh_token
+    || payload.token?.refresh
+    || payload.token?.refresh_token
+    || payload.auth?.refresh
+    || payload.auth?.refresh_token
+}
+
+function buildUser(payload, fallbackEmail = '') {
+  const rawUser = payload.user || payload.profile || payload.account || payload.customer || payload.admin || payload
+  const email = rawUser.email || payload.email || payload.user_email || fallbackEmail
+
+  return {
+    ...rawUser,
+    email,
+    username: rawUser.username || rawUser.email || email,
+    role: normalizeRole(rawUser.role || payload.role || rawUser.user_type || payload.user_type || rawUser.type || payload.type),
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('user')
@@ -21,9 +64,10 @@ export function AuthProvider({ children }) {
 
       try {
         const { data } = await api.get('/api/auth/profile/')
-        setUser(data)
-        localStorage.setItem('user', JSON.stringify(data))
-      } catch (error) {
+        const nextUser = buildUser(unwrapPayload(data), user?.email)
+        setUser(nextUser)
+        localStorage.setItem('user', JSON.stringify(nextUser))
+      } catch {
         logout()
       } finally {
         setLoading(false)
@@ -35,19 +79,23 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     const response = await api.post('/api/auth/login/', credentials)
-    const payload = response?.data?.data || response?.data || {}
-    const nextUser = {
-      email: payload.email,
-      role: payload.role,
-      username: payload.email,
+    const payload = unwrapPayload(response?.data)
+    const access = getAccessToken(payload)
+    const refresh = getRefreshToken(payload)
+
+    if (!access) {
+      throw new Error('Login response did not include an access token.')
     }
 
-    localStorage.setItem('access_token', payload.access)
-    localStorage.setItem('refresh_token', payload.refresh)
+    const nextUser = buildUser(payload, credentials.email)
+
+    localStorage.setItem('access_token', access)
+    if (refresh) localStorage.setItem('refresh_token', refresh)
+    else localStorage.removeItem('refresh_token')
     localStorage.setItem('user', JSON.stringify(nextUser))
 
-    setAccessToken(payload.access)
-    setRefreshToken(payload.refresh)
+    setAccessToken(access)
+    setRefreshToken(refresh || null)
     setUser(nextUser)
 
     return nextUser
@@ -55,8 +103,8 @@ export function AuthProvider({ children }) {
 
   const register = async (credentials) => {
     const response = await api.post('/api/auth/register/', credentials)
-    const payload = response?.data?.data || response?.data || {}
-    const nextUser = payload || null
+    const payload = unwrapPayload(response?.data)
+    const nextUser = buildUser(payload, credentials.email)
 
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
@@ -85,7 +133,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     isAuthenticated: Boolean(accessToken),
-    isAdmin: user?.role === 'ADMIN',
+    isAdmin: normalizeRole(user?.role) === 'ADMIN',
   }), [accessToken, loading, refreshToken, user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
