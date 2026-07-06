@@ -10,10 +10,27 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const loadOrders = async () => {
+        try {
+            const { data } = await api.get('/api/v1/orders/')
+            console.log(data)
+            setOrders(data.results)
+        } catch (err) {
+            console.log(err.response)
+            setError('Unable to load orders')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    loadOrders()
+}, [])
+
+  useEffect(() => {
+    const loadOrders = async () => {
       try {
         const { data } = await api.get('/api/v1/orders/')
-        setOrders(toArray(data))
-      } catch {
+        setOrders(data.result || [])
+      } catch (err) {
         setError('Unable to load orders')
       } finally {
         setLoading(false)
@@ -25,6 +42,7 @@ export default function OrdersPage() {
 
   if (loading) return <p className="loading-state">Loading orders...</p>
 
+  console.log('fetched orders',orders);
   return (
     <div className="page-stack">
       <section className="page-hero"><div><p className="eyebrow">Order history</p><h1>My Orders</h1><p>Track reserved inventory, order totals, and payment next steps.</p></div><Link className="button" to="/products">Shop products</Link></section>
