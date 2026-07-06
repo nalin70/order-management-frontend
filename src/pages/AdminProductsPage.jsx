@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import api from '../api/axios'
+import { formatCurrency } from '../utils/apiData'
 
 const emptyForm = {
   name: '',
@@ -23,7 +24,7 @@ export default function AdminProductsPage() {
     try {
       const { data } = await api.get('/api/v1/products/')
       setProducts(data.results ?? data)
-    } catch (err) {
+    } catch {
       setError('Unable to load products')
     } finally {
       setLoading(false)
@@ -63,7 +64,7 @@ export default function AdminProductsPage() {
       setForm(emptyForm)
       setEditingId(null)
       await loadProducts()
-    } catch (err) {
+    } catch {
       setError('Unable to save product')
     }
   }
@@ -107,10 +108,18 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div>
-      <h1>Admin inventory</h1>
-      {error ? <p className="error">{error}</p> : null}
-      {message ? <p className="success">{message}</p> : null}
+    <div className="page-stack">
+      <section className="page-hero">
+        <div>
+          <p className="eyebrow">Admin inventory</p>
+          <h1>Inventory</h1>
+          <p>Create, edit, and monitor stock for products in the catalog.</p>
+        </div>
+      </section>
+
+      {error ? <p className="alert error">{error}</p> : null}
+      {message ? <p className="alert success">{message}</p> : null}
+
       <div className="admin-product-layout">
         <section className="product-form-card">
           <h2>{title}</h2>
@@ -122,7 +131,7 @@ export default function AdminProductsPage() {
             <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} />
             <div className="product-form-actions">
               <button type="submit">Save</button>
-              {editingId ? <button type="button" onClick={cancelEdit}>Cancel</button> : null}
+              {editingId ? <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button> : null}
             </div>
           </form>
         </section>
@@ -134,11 +143,11 @@ export default function AdminProductsPage() {
                 <h3>{product.name}</h3>
                 <p>{product.description || 'No description'}</p>
                 <p>SKU: {product.sku || 'N/A'}</p>
-                <p><strong>${product.price}</strong></p>
+                <p><strong>{formatCurrency(product.price)}</strong></p>
                 <p>Stock: {product.stock}</p>
                 <div className="product-actions">
                   <button type="button" onClick={() => handleEdit(product)}>Edit</button>
-                  <button type="button" onClick={() => handleDelete(product.id)}>Delete</button>
+                  <button type="button" className="danger" onClick={() => handleDelete(product.id)}>Delete</button>
                 </div>
               </article>
             ))}

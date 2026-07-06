@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import api from '../api/axios'
-import { formatCurrency, toArray } from '../utils/apiData'
+import { canInitiateOrderPayment, formatCurrency, toArray } from '../utils/apiData'
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState([])
@@ -24,7 +24,7 @@ export default function PaymentsPage() {
     loadData().catch(() => setError('Unable to load payments')).finally(() => setLoading(false))
   }, [])
 
-  const payableOrders = useMemo(() => orders.filter((order) => !['PAID', 'CANCELLED'].includes(order.status)), [orders])
+  const payableOrders = useMemo(() => orders.filter(canInitiateOrderPayment), [orders])
 
   const initiatePayment = async () => {
     setError('')

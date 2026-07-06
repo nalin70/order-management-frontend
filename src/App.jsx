@@ -1,4 +1,4 @@
-import { BrowserRouter, Link } from 'react-router-dom'
+import { BrowserRouter, NavLink } from 'react-router-dom'
 import { useContext } from 'react'
 import { AuthProvider, AuthContext } from './context/AuthContext'
 import AppRoutes from './routes/AppRoutes'
@@ -6,6 +6,7 @@ import './App.css'
 
 function AppShell() {
   const { isAuthenticated, isAdmin, loading, logout } = useContext(AuthContext)
+  const navClassName = ({ isActive }) => (isActive ? 'active' : undefined)
 
   if (loading) {
     return <p>Loading...</p>
@@ -15,13 +16,14 @@ function AppShell() {
     <div className="app-shell">
       {isAuthenticated ? (
         <nav className="top-nav">
-          <Link to={isAdmin ? '/admin' : '/dashboard'}>Dashboard</Link>
-          {!isAdmin ? <Link to="/products">Products</Link> : null}
-          {!isAdmin ? <Link to="/orders">My Orders</Link> : null}
-          {!isAdmin ? <Link to="/payments">Payments</Link> : null}
-          {isAdmin ? <Link to="/admin/orders">Orders</Link> : null}
-          {isAdmin ? <Link to="/admin/products">Inventory</Link> : null}
-          <Link to="/profile">Profile</Link>
+          <div className="nav-links">
+            {!isAdmin ? <NavLink className={navClassName} to="/products">Products</NavLink> : null}
+            {!isAdmin ? <NavLink className={navClassName} to="/orders">My Orders</NavLink> : null}
+            {!isAdmin ? <NavLink className={navClassName} to="/payments">Payments</NavLink> : null}
+            {isAdmin ? <NavLink className={navClassName} to="/admin/orders">Orders</NavLink> : null}
+            {isAdmin ? <NavLink className={navClassName} to="/admin/products">Products</NavLink> : null}
+            <NavLink className={navClassName} to="/profile">Profile</NavLink>
+          </div>
           <button type="button" className="logout-button" onClick={logout}>
             Logout
           </button>
