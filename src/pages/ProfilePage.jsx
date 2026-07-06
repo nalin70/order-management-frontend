@@ -24,17 +24,35 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="card">
-      <h1>Profile</h1>
-      <p><strong>Email:</strong> {user?.email || '—'}</p>
-      <p><strong>Role:</strong> {user?.role || '—'}</p>
-      <form onSubmit={handleSubmit} className="profile-form">
-        <input name="first_name" placeholder="First name" value={form.first_name} onChange={handleChange} />
-        <input name="last_name" placeholder="Last name" value={form.last_name} onChange={handleChange} />
-        <button type="submit">Update profile</button>
-      </form>
-      {message ? <p className="success">{message}</p> : null}
-      <button type="button" className="logout-button" onClick={logout}>Logout</button>
+    <div className="page-stack narrow">
+      <section className="page-hero">
+        <div>
+          <p className="eyebrow">Account</p>
+          <h1>Profile</h1>
+          <p>Manage your account details and session.</p>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="stat-grid">
+          <div>
+            <span>Email</span>
+            <strong>{user?.email || '-'}</strong>
+          </div>
+          <div>
+            <span>Role</span>
+            <strong>{user?.role || '-'}</strong>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="profile-form">
+          <input name="first_name" placeholder="First name" value={form.first_name} onChange={handleChange} />
+          <input name="last_name" placeholder="Last name" value={form.last_name} onChange={handleChange} />
+          <button type="submit">Update profile</button>
+        </form>
+        {message ? <p className="success">{message}</p> : null}
+        <button type="button" className="logout-button" onClick={logout}>Logout</button>
+      </section>
     </div>
   )
 }

@@ -5,19 +5,27 @@ export default function CustomerDashboard() {
   const { user } = useContext(AuthContext)
 
   return (
-    <div className="dashboard-card">
-      <h1>Welcome, {user?.email || user?.username || 'Customer'}</h1>
-      <p>Your role: {user?.role || 'CUSTOMER'}</p>
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Total orders</h3>
-          <p>—</p>
+    <div className="page-stack narrow">
+      <section className="page-hero">
+        <div>
+          <p className="eyebrow">Customer dashboard</p>
+          <h1>Welcome, {user?.email || user?.username || 'Customer'}</h1>
+          <p>Your role: {user?.role || 'CUSTOMER'}</p>
         </div>
-        <div className="stat-card">
-          <h3>Open payments</h3>
-          <p>—</p>
+      </section>
+
+      <section className="dashboard-card">
+        <div className="stats-grid">
+          <div className="stat-card">
+            <h3>Total orders</h3>
+            <p>-</p>
+          </div>
+          <div className="stat-card">
+            <h3>Open payments</h3>
+            <p>-</p>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   )
 }
