@@ -17,6 +17,7 @@ export default function AdminProductsPage() {
   const [message, setMessage] = useState('')
   const [form, setForm] = useState(emptyForm)
   const [editingId, setEditingId] = useState(null)
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false)
 
   const loadProducts = async () => {
     setLoading(true)
@@ -63,10 +64,19 @@ export default function AdminProductsPage() {
       }
       setForm(emptyForm)
       setEditingId(null)
+      setIsProductModalOpen(false)
       await loadProducts()
     } catch {
       setError('Unable to save product')
     }
+  }
+
+  const handleAdd = () => {
+    setError('')
+    setMessage('')
+    setEditingId(null)
+    setForm(emptyForm)
+    setIsProductModalOpen(true)
   }
 
   const handleEdit = (product) => {
@@ -80,6 +90,7 @@ export default function AdminProductsPage() {
       price: product.price || '',
       stock: product.stock || '',
     })
+    setIsProductModalOpen(true)
   }
 
   const handleDelete = async (id) => {
@@ -97,8 +108,8 @@ export default function AdminProductsPage() {
   const cancelEdit = () => {
     setEditingId(null)
     setForm(emptyForm)
-    setMessage('')
     setError('')
+    setIsProductModalOpen(false)
   }
 
   const title = useMemo(() => (editingId ? 'Edit product' : 'Create product'), [editingId])
@@ -113,47 +124,64 @@ export default function AdminProductsPage() {
         <div>
           <p className="eyebrow">Admin inventory</p>
           <h1>Inventory</h1>
-          <p>Create, edit, and monitor stock for products in the catalog.</p>
+          <p>Create, edit, and monitor stock for products in the catalogue.</p>
+        </div>
+        <div className="page-hero-actions">
+          <button type="button" onClick={handleAdd}>Add product</button>
         </div>
       </section>
 
       {error ? <p className="alert error">{error}</p> : null}
       {message ? <p className="alert success">{message}</p> : null}
 
-      <div className="admin-product-layout">
-        <section className="product-form-card">
-          <h2>{title}</h2>
-          <form onSubmit={handleSave} className="product-form">
-            <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
-            <input name="sku" placeholder="SKU" value={form.sku} onChange={handleChange} />
-            <input name="price" type="number" step="0.01" placeholder="Price" value={form.price} onChange={handleChange} required />
-            <input name="stock" type="number" placeholder="Stock" value={form.stock} onChange={handleChange} required />
-            <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} />
-            <div className="product-form-actions">
-              <button type="submit">Save</button>
-              {editingId ? <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button> : null}
+      <section className="admin-product-list">
+        <h2>Product list</h2>
+        <div className="card-grid">
+          {products.map((product) => (
+            <article key={product.id} className="card">
+              <h3>{product.name}</h3>
+              <p>{product.description || 'No description'}</p>
+              <p>SKU: {product.sku || 'N/A'}</p>
+              <p><strong>{formatCurrency(product.price)}</strong></p>
+              <p>Stock: {product.stock}</p>
+              <div className="product-actions">
+                <button type="button" onClick={() => handleEdit(product)}>Edit</button>
+                <button type="button" className="danger" onClick={() => handleDelete(product.id)}>Delete</button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {isProductModalOpen ? (
+        <div className="modal-backdrop" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) cancelEdit()
+        }}>
+          <section className="modal-panel product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+            <div className="modal-header">
+              <div>
+                <p className="eyebrow">Product</p>
+                <h2 id="product-modal-title">{title}</h2>
+              </div>
+              <button className="modal-close" type="button" aria-label="Close product popup" onClick={cancelEdit}>
+                &times;
+              </button>
             </div>
-          </form>
-        </section>
-        <section className="admin-product-list">
-          <h2>Product list</h2>
-          <div className="card-grid">
-            {products.map((product) => (
-              <article key={product.id} className="card">
-                <h3>{product.name}</h3>
-                <p>{product.description || 'No description'}</p>
-                <p>SKU: {product.sku || 'N/A'}</p>
-                <p><strong>{formatCurrency(product.price)}</strong></p>
-                <p>Stock: {product.stock}</p>
-                <div className="product-actions">
-                  <button type="button" onClick={() => handleEdit(product)}>Edit</button>
-                  <button type="button" className="danger" onClick={() => handleDelete(product.id)}>Delete</button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      </div>
+            {error ? <p className="alert error">{error}</p> : null}
+            <form onSubmit={handleSave} className="product-form">
+              <input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
+              <input name="sku" placeholder="SKU" value={form.sku} onChange={handleChange} />
+              <input name="price" type="number" step="0.01" placeholder="Price" value={form.price} onChange={handleChange} required />
+              <input name="stock" type="number" placeholder="Stock" value={form.stock} onChange={handleChange} required />
+              <textarea name="description" placeholder="Description" value={form.description} onChange={handleChange} />
+              <div className="product-form-actions">
+                <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button>
+                <button type="submit">{editingId ? 'Update product' : 'Add product'}</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -10,27 +10,10 @@ export default function OrdersPage() {
 
   useEffect(() => {
     const loadOrders = async () => {
-        try {
-            const { data } = await api.get('/api/v1/orders/')
-            console.log(data)
-            setOrders(data.results)
-        } catch (err) {
-            console.log(err.response)
-            setError('Unable to load orders')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    loadOrders()
-}, [])
-
-  useEffect(() => {
-    const loadOrders = async () => {
       try {
         const { data } = await api.get('/api/v1/orders/')
-        setOrders(data.result || [])
-      } catch (err) {
+        setOrders(toArray(data))
+      } catch {
         setError('Unable to load orders')
       } finally {
         setLoading(false)
@@ -42,11 +25,11 @@ export default function OrdersPage() {
 
   if (loading) return <p className="loading-state">Loading orders...</p>
 
-  console.log('fetched orders',orders);
   return (
     <div className="page-stack">
       <section className="page-hero"><div><p className="eyebrow">Order history</p><h1>My Orders</h1><p>Track reserved inventory, order totals, and payment next steps.</p></div><Link className="button" to="/products">Shop products</Link></section>
       {error ? <p className="alert error">{error}</p> : null}
+      {!error && !orders.length ? <p className="alert">No orders found yet.</p> : null}
       <div className="card-grid">
         {orders.map((order) => {
           const paymentState = getOrderPaymentState(order)
@@ -61,7 +44,7 @@ export default function OrdersPage() {
                 <Link className="button secondary" to={`/orders/${order.id}`}>View details</Link>
                 {paymentState === 'paid' ? <button className="button secondary" type="button" disabled>Paid</button> : null}
                 {paymentState === 'processing' ? <button className="button secondary" type="button" disabled>Payment processing</button> : null}
-                {!paymentState ? <Link className="button" to="/payments">Pay now</Link> : null}
+                {!paymentState ? <Link className="button" to={`/orders/${order.id}`}>Manage payment</Link> : null}
               </div>
             </article>
           )

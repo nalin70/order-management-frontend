@@ -7,7 +7,6 @@ import ProductListPage from '../pages/ProductListPage'
 import ProfilePage from '../pages/ProfilePage'
 import OrdersPage from '../pages/OrdersPage'
 import OrderDetailPage from '../pages/OrderDetailPage'
-import PaymentsPage from '../pages/PaymentsPage'
 import AdminOrdersPage from '../pages/AdminOrdersPage'
 import AdminProductsPage from '../pages/AdminProductsPage'
 
@@ -95,7 +94,7 @@ export default function AppRoutes() {
         path="/payments"
         element={
           <PrivateRoute>
-            <PaymentsPage />
+            <Navigate to="/orders" replace />
           </PrivateRoute>
         }
       />

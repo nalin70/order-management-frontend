@@ -6,6 +6,7 @@ export default function ProfilePage() {
   const { user, logout } = useContext(AuthContext)
   const [form, setForm] = useState({ first_name: user?.first_name || '', last_name: user?.last_name || '' })
   const [message, setMessage] = useState('')
+  const isAdmin = String(user?.role ?? '').toUpperCase() === 'ADMIN'
 
   const handleChange = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value })
@@ -45,12 +46,16 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="profile-form">
-          <input name="first_name" placeholder="First name" value={form.first_name} onChange={handleChange} />
-          <input name="last_name" placeholder="Last name" value={form.last_name} onChange={handleChange} />
-          <button type="submit">Update profile</button>
-        </form>
-        {message ? <p className="success">{message}</p> : null}
+        {!isAdmin ? (
+          <>
+            <form onSubmit={handleSubmit} className="profile-form">
+              <input name="first_name" placeholder="First name" value={form.first_name} onChange={handleChange} />
+              <input name="last_name" placeholder="Last name" value={form.last_name} onChange={handleChange} />
+              <button type="submit">Update profile</button>
+            </form>
+            {message ? <p className="success">{message}</p> : null}
+          </>
+        ) : null}
         <button type="button" className="logout-button" onClick={logout}>Logout</button>
       </section>
     </div>

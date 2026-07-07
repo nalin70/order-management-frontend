@@ -19,7 +19,6 @@ function AppShell() {
           <div className="nav-links">
             {!isAdmin ? <NavLink className={navClassName} to="/products">Products</NavLink> : null}
             {!isAdmin ? <NavLink className={navClassName} to="/orders">My Orders</NavLink> : null}
-            {!isAdmin ? <NavLink className={navClassName} to="/payments">Payments</NavLink> : null}
             {isAdmin ? <NavLink className={navClassName} to="/admin/orders">Orders</NavLink> : null}
             {isAdmin ? <NavLink className={navClassName} to="/admin/products">Products</NavLink> : null}
             <NavLink className={navClassName} to="/profile">Profile</NavLink>

@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
+import PasswordField from '../components/PasswordField'
 
 function getLoginErrorMessage(err) {
   const data = err.response?.data
@@ -43,7 +44,7 @@ export default function LoginPage() {
       <h1>Sign in</h1>
       <form onSubmit={handleSubmit}>
         <input name="email" type="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} required />
+        <PasswordField name="password" label="Password" value={form.password} onChange={handleChange} required />
         <button type="submit">Login</button>
       </form>
       {error ? <p className="error">{error}</p> : null}

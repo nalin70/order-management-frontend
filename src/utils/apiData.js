@@ -7,9 +7,9 @@ export function toArray(payload) {
 
 export function formatCurrency(value) {
   const numberValue = Number(value ?? 0)
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
   }).format(Number.isFinite(numberValue) ? numberValue : 0)
 }
 
