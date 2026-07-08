@@ -44,16 +44,26 @@ function getPaymentStatuses(order) {
   return [...directStatuses, ...relatedPaymentStatuses].map(normalizeStatus).filter(Boolean)
 }
 
+function hasPaidFlag(order) {
+  return [
+    order?.is_paid,
+    order?.paid,
+    order?.payment?.is_paid,
+    order?.payment?.paid,
+    order?.latest_payment?.is_paid,
+    order?.latest_payment?.paid,
+    order?.latestPayment?.isPaid,
+    order?.latestPayment?.paid,
+  ].some((value) => value === true)
+}
+
 export function getOrderPaymentState(order) {
+  if (hasPaidFlag(order)) return 'paid'
+
   const paymentStatuses = getPaymentStatuses(order)
 
   if (paymentStatuses.some((status) => completedPaymentStatuses.has(status))) return 'paid'
   if (paymentStatuses.some((status) => processingPaymentStatuses.has(status))) return 'processing'
-
-  const orderStatus = normalizeStatus(order?.status)
-
-  if (completedPaymentStatuses.has(orderStatus)) return 'paid'
-  if (orderStatus === 'payment_processing') return 'processing'
 
   return ''
 }
